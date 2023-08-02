@@ -19,6 +19,7 @@
 		"typescript": "^5.0.4"
 	},
 	"dependencies": {
+		"@esbuild/linux-x64": "^0.18.13",
 		"@types/node": "^20.2.5",
 		"discord.js": "^14.11.0"
 	}

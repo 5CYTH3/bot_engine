@@ -6,12 +6,10 @@ import {
 	Routes,
 	SlashCommandBuilder,
 } from 'discord.js'
-import { Command, CommandBuilder } from './commands/commandBuilder'
 
-type BotSpecs = { token: string; CLIENT_ID: string; GUILD_ID: string }
+type BotSpecs = { token: string; CLIENT_ID: string; }
 
-export class Bot {
-	public client: Client
+export class Bot extends Client {
 	private specs: BotSpecs
 
 	private commands: {
@@ -20,31 +18,26 @@ export class Bot {
 	}[] = []
 
 	constructor(botSpecs: BotSpecs) {
-		this.specs = botSpecs
-		this.client = new Client({
+		super({
 			intents: [
 				IntentsBitField.Flags.Guilds,
 				IntentsBitField.Flags.GuildMembers,
 				IntentsBitField.Flags.GuildMessages,
 				IntentsBitField.Flags.MessageContent,
 			],
-		})
+		});
+		this.specs = botSpecs
 	}
 
-	public login() {
-		this.client.login(this.specs.token)
-	}
-
-	public addCommand(command: Command) {
-		this.commands.push(command.convert())
+	public run() {
+		super.login(this.specs.token)
 	}
 
 	public async registerCommands() {
 		let rest = new REST({ version: '10' }).setToken(this.specs.token)
 		await rest.put(
-			Routes.applicationGuildCommands(
-				this.specs.CLIENT_ID,
-				this.specs.GUILD_ID
+			Routes.applicationCommands(
+				this.specs.CLIENT_ID
 			),
 			{
 				body: this.commands,
